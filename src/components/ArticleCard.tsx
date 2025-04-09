@@ -11,7 +11,7 @@ export default function ArticleCard({ metadata }: ArticleCardProps) {
   return (
     <article className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
       <Link 
-        href={`/artigos${metadata.slug}`}
+        href={`/artigos/${metadata.slug}`}
         className="block"
       >
         <div className="flex items-center mb-4">

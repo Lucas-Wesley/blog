@@ -42,14 +42,33 @@ export function getArticleBySlug(slug: string) {
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const { data, content } = matter(fileContents);
   
+  // Tenta extrair o título do conteúdo Markdown se não houver nos metadados
+  let title = data.title;
+  if (!title) {
+    // Procura por um cabeçalho H1 (#) no conteúdo
+    const h1Match = content.match(/^#\s+(.+)$/m);
+    if (h1Match) {
+      title = h1Match[1].trim();
+    }
+  }
+
+  // Tenta extrair a categoria do caminho do arquivo se não houver nos metadados
+  let category = data.category;
+  if (!category) {
+    const pathParts = slug.split('/');
+    if (pathParts.length > 1) {
+      category = pathParts[0].charAt(0).toUpperCase() + pathParts[0].slice(1);
+    }
+  }
+  
   // Garante valores padrão para todos os campos
   const articleData: ArticleMetadata = {
     slug: slug.replace(/\.md$/, ''),
-    title: data.title || 'Sem título',
+    title: title || 'Sem título',
     date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
     status: data.status || 'published',
     description: data.description || '',
-    category: data.category || 'Sem categoria',
+    category: category || 'Sem categoria',
   };
 
   return {
