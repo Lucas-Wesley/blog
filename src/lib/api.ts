@@ -21,10 +21,14 @@ export function getArticleSlugs() {
     
     files.forEach(file => {
       const filePath = path.join(dirPath, file);
+      const relativePath = path.relative(articlesDirectory, filePath)
+        .split(path.sep)
+        .join('/'); // Normaliza separadores para forward slash
+      
       if (fs.statSync(filePath).isDirectory()) {
         getAllFiles(filePath);
       } else if (path.extname(file) === '.md') {
-        allFiles.push(filePath);
+        allFiles.push(relativePath);
       }
     });
   }
@@ -34,20 +38,19 @@ export function getArticleSlugs() {
 }
 
 export function getArticleBySlug(slug: string) {
-  const fullPath = slug;
+  const fullPath = path.join(articlesDirectory, slug);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const { data, content } = matter(fileContents);
   
+  // Garante valores padrão para todos os campos
   const articleData: ArticleMetadata = {
-    slug: slug.replace(articlesDirectory, '').replace(/\.md$/, ''),
-    title: data.title,
-    date: data.date,
-    status: data.status,
-    description: data.description,
-    category: data.category,
+    slug: slug.replace(/\.md$/, ''),
+    title: data.title || 'Sem título',
+    date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+    status: data.status || 'published',
+    description: data.description || '',
+    category: data.category || 'Sem categoria',
   };
-
-  console.log(articleData.slug)
 
   return {
     metadata: articleData,
@@ -77,7 +80,14 @@ export function getAllArticles(options?: {
   }
 
   // Ordenar por data (mais recentes primeiro)
-  articles = articles.sort((a, b) => new Date(b.metadata.date).getTime() - new Date(a.metadata.date).getTime());
+  articles = articles.sort((a, b) => {
+    try {
+      return new Date(b.metadata.date).getTime() - new Date(a.metadata.date).getTime();
+    } catch (error) {
+      console.error('Error sorting articles by date:', error);
+      return 0;
+    }
+  });
 
   // Limitar número de artigos
   if (options?.limit) {
@@ -109,14 +119,19 @@ export function getArticlesByDate(year?: number, month?: number) {
   const articles = getAllArticles();
   
   return articles.filter((article) => {
-    const date = new Date(article.metadata.date);
-    if (year && month) {
-      return date.getFullYear() === year && date.getMonth() === month - 1;
+    try {
+      const date = new Date(article.metadata.date);
+      if (year && month) {
+        return date.getFullYear() === year && date.getMonth() === month - 1;
+      }
+      if (year) {
+        return date.getFullYear() === year;
+      }
+      return true;
+    } catch (error) {
+      console.error('Error filtering articles by date:', error);
+      return false;
     }
-    if (year) {
-      return date.getFullYear() === year;
-    }
-    return true;
   });
 }
 
