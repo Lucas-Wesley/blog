@@ -1,4 +1,10 @@
-# FUNDAMENTOS DE BACK-END:  parte 4 (NÂO REVISADO E ALTERAR O TEXTO)
+---
+title: "Back-End - Além das APIs (Parte 4)"
+date: "2023-11-13"
+status: "published"
+description: "Uma exploração detalhada sobre registradores, processos, threads e comunicação entre processos em sistemas operacionais"
+category: "Backend"
+---
 
 ##  REGISTRADORES
 

@@ -1,23 +1,23 @@
 ---
-title: "Back-End - Além das APIs (Parte 1)"
+title: "Fundamentos de Back-End:  (Parte 1)"
 date: "2023-11-14"
 status: "published"
 description: "Uma exploração profunda sobre o funcionamento do back-end, indo além das APIs e explorando conceitos fundamentais como CPU, Assembly, compiladores e mais."
 category: "Backend"
 ---
 
-# Back-End - Além das APIs (Parte 1)
+O disclaimer de sempre: Nada o que está escrito eu tirei da minha cabeça. É apenas uma compilação e organização das referências. Todas as referências estão no final do artigo.
 
-O disclaimer de sempre, porém sempre importante: Nada o que está escrito eu tirei da minha cabeça. É apenas uma compilação e organização das referências. Todas as referências estão no final do artigo.
+Pega sua cerveja porque o caminho é longo. 
 
-Pega sua cerveja porque esse artigo vai ser longo....
+## O INÍCIO
 
-Antes de chegamos nas linguagens de programação, vamos voltar algumas casas. Vamos começar do começo de verdade. 
-
-Daria pra voltar mais, mas não vamos entrar na parte de como funciona um transistor, 
-portas lógicas, etc. Vamos direto para a CPU.
-
-Muitos conceitos e tecnologias expliquei em outros artigos, então vou apenas para um link a eles.
+Meu objetivo é chegar na abstração da linguagem de programação. Porém, existe um universo de conceitos importantes que precisamos entender antes.
+Estou revisando esses conceitos e vou documentar nessa série de artigos: "Fundamentos de Back-End".
+ 
+Temos que partir de algum ponto, vamos ignorar a parte eletrônica. Portas lógicas,
+[complementar com mais assuntos]
+Vamos direto para a CPU.
 
 ## CPU, ASSEMBLY, COMPILADORES
 

@@ -1,5 +1,11 @@
-# BACK-END ALÉM DAS APIs: Processos - parte 2:
-(NÂO REVISADO E ALTERAR O TEXTO)
+---
+title: "Back-End - Além das APIs (Parte 2)"
+date: "2023-11-13"
+status: "published"
+description: "Uma exploração profunda sobre processos, sistemas operacionais e a evolução das tecnologias de back-end"
+category: "Backend"
+---
+
 
 O disclaimer de sempre, porém sempre importante: 
 - Nada o que está escrito eu tirei da minha cabeça. É apenas uma compilação e organização das referências. Todas as referências estão no final do artigo.

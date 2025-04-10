@@ -49,7 +49,7 @@ export default async function Article({ params }: { params: { slug?: string[] } 
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">{article.metadata.title || 'Sem título'}</h1>
+        <h1 className="text-3xl font-bold mb-4">{article.metadata.title || 'Sem título'}</h1>
         <div className="flex items-center text-gray-600">
           <time dateTime={article.metadata.date}>
             {formatDate(article.metadata.date)}
@@ -59,7 +59,7 @@ export default async function Article({ params }: { params: { slug?: string[] } 
         </div>
       </header>
       <div 
-        className="prose prose-lg max-w-none"
+        className="prose prose-lg max-w-none text-lg conteudo-blog"
         dangerouslySetInnerHTML={{ __html: contentHtml }} 
       />
     </article>

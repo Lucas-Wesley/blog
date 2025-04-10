@@ -1,7 +1,7 @@
 ---
 title: "Processo de Boot: Do Botão de Ligar ao Sistema Operacional"
 date: "2023-11-12"
-status: "published"
+status: "draft"
 description: "Uma explicação detalhada do processo de inicialização de um computador, desde o momento em que você aperta o botão de ligar até o sistema operacional estar pronto para uso"
 category: "Sistemas Operacionais"
 ---

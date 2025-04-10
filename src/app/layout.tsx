@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <nav className="bg-gray-800 text-white p-4">
           <div className="container mx-auto">
-            <a href="/" className="text-xl font-bold">Blog</a>
+            <a href="/" className="text-xl font-bold mr-3">Inicio</a>
           </div>
         </nav>
         {children}

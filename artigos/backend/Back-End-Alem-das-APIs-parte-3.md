@@ -1,5 +1,11 @@
-# FUNDAMENTOS DE BACK-END:  parte 3
-(NÂO REVISADO E ALTERAR O TEXTO)
+---
+title: "Back-End - Além das APIs (Parte 3)"
+date: "2023-11-13"
+status: "published"
+description: "Uma análise aprofundada sobre concorrência, paralelismo e gerenciamento de processos em sistemas operacionais"
+category: "Backend"
+---
+
 
 ## OQUE é concorrência e paralelismo
 

@@ -1,7 +1,7 @@
 ---
 title: "Título do Artigo"
 date: "2023-11-14"
-status: "published"
+status: "draft"
 description: "Uma breve descrição do artigo que aparecerá no card da página principal"
 category: "Categoria"
 ---

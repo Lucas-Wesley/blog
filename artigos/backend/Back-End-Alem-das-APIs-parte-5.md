@@ -1,12 +1,14 @@
-# FUNDAMENTOS DE BACK-END:  parte 5 (NÂO REVISADO E ALTERAR O TEXTO)
-
-## LUCAS
+---
+title: "Back-End - Além das APIs (Parte 5)"
+date: "2023-11-13"
+status: "published"
+description: "Uma análise profunda sobre gerenciamento de memória em sistemas Linux, incluindo representações binárias, hexadecimais e alocadores de memória"
+category: "Backend"
+---
 
 
 Então hoje vamos escovar bits um pouco.
 Como a série é pra iniciantes, vale revisitar um pouco sobre representações binárias e hexadecimal e entender mais sobre como o computador e seus programas enxergam essa tal de "memória".
-
-
 
 Hoje quero explicar como os principais alocadores de memória do Linux funcionam e ensinar o que são os principais desafios que envolvem o gerenciamento de memória. Tudo isso vai ser importante pra semana que vem que vou explicar sobre garbage collectors.
 

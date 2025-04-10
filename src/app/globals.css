@@ -11,3 +11,8 @@ body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
 }
+
+body .conteudo-blog h2 {
+  font-size: var(--text-2xl); /* 1.5rem (24px) */ 
+  line-height: var(--text-2xl--line-height); /* calc(2 / 1.5) */
+}

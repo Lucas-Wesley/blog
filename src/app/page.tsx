@@ -3,18 +3,24 @@ import ArticleCard from '@/components/ArticleCard';
 import Link from 'next/link';
 
 export default function Home() {
-  const articles = getAllArticles({ limit: 6 });
+  const articles = getAllArticles({ limit: 20 });
   const categories = getAllCategories();
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="container mx-auto px-4 py-4">
       <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-8 text-center">Blog</h1>
+        <div className="bg-blue-100 p-4 rounded-lg mb-5">
+          <p className="text-neutral-800 text-left">
+            📝 Apenas documentando meus estudos, talvez você aproveite algo também.
+          </p>
+        </div>
+
+        {/* <h1 className="text-4xl font-bold mb-8 text-center"> asd </h1> */}
         
         {/* Barra de pesquisa */}
         <form 
           action="/pesquisa" 
-          className="max-w-2xl mx-auto mb-8"
+          className="max-w-2xl mx-auto mb-5"
         >
           <input
             type="search"
@@ -25,7 +31,7 @@ export default function Home() {
         </form>
 
         {/* Lista de categorias */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
+        <div className="flex flex-wrap justify-center gap-2 mb-5">
           {categories.map((category) => (
             <Link
               key={category}
