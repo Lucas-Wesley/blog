@@ -1,7 +1,7 @@
 ---
 title: "Back-End - Além das APIs (Parte 4)"
 date: "2023-11-13"
-status: "published"
+status: "draft"
 description: "Uma exploração detalhada sobre registradores, processos, threads e comunicação entre processos em sistemas operacionais"
 category: "Backend"
 ---

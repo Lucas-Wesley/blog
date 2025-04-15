@@ -1,7 +1,7 @@
 ---
 title: "Fundamentos de Back-End:  (Parte 1)"
 date: "2023-11-14"
-status: "published"
+status: "draft"
 description: "Uma exploração profunda sobre o funcionamento do back-end, indo além das APIs e explorando conceitos fundamentais como CPU, Assembly, compiladores e mais."
 category: "Backend"
 ---

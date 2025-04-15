@@ -41,6 +41,9 @@ export function getArticleBySlug(slug: string) {
   const fullPath = path.join(articlesDirectory, slug);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const { data, content } = matter(fileContents);
+
+  console.log('Article data:', data);
+
   
   // Tenta extrair o título do conteúdo Markdown se não houver nos metadados
   let title = data.title;
@@ -62,6 +65,7 @@ export function getArticleBySlug(slug: string) {
   }
   
   // Garante valores padrão para todos os campos
+
   const articleData: ArticleMetadata = {
     slug: slug.replace(/\.md$/, ''),
     title: title || 'Sem título',

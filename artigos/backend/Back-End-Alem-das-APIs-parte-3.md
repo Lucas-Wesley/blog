@@ -1,7 +1,7 @@
 ---
 title: "Back-End - Além das APIs (Parte 3)"
 date: "2023-11-13"
-status: "published"
+status: "draft"
 description: "Uma análise aprofundada sobre concorrência, paralelismo e gerenciamento de processos em sistemas operacionais"
 category: "Backend"
 ---

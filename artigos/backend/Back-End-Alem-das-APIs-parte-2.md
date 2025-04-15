@@ -1,7 +1,7 @@
 ---
 title: "Back-End - Além das APIs (Parte 2)"
 date: "2023-11-13"
-status: "published"
+status: "draft"
 description: "Uma exploração profunda sobre processos, sistemas operacionais e a evolução das tecnologias de back-end"
 category: "Backend"
 ---

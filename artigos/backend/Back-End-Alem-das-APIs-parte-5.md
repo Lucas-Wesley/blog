@@ -1,7 +1,7 @@
 ---
 title: "Back-End - Além das APIs (Parte 5)"
 date: "2023-11-13"
-status: "published"
+status: "draft"
 description: "Uma análise profunda sobre gerenciamento de memória em sistemas Linux, incluindo representações binárias, hexadecimais e alocadores de memória"
 category: "Backend"
 ---
