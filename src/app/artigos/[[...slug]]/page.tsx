@@ -117,29 +117,33 @@ export default async function Article({ params }: { params: { slug?: string[] } 
       />
       
       {(navigationLinks.previous || navigationLinks.next) && (
-        <nav className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <nav className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
           {navigationLinks.previous && (
             <a
               href={navigationLinks.previous.url}
-              className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+              className="group p-6 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 ease-in-out relative overflow-hidden"
             >
-              <span className="block text-sm text-gray-500">Anterior</span>
-              <span className="block font-medium mt-1">
-                {navigationLinks.previous.title}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-500 mb-2 font-medium">← Anterior</span>
+                <span className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  {navigationLinks.previous.title}
+                </span>
+              </div>
             </a>
           )}
           {navigationLinks.next && (
             <a
               href={navigationLinks.next.url}
-              className={`p-4 border rounded-lg hover:bg-gray-50 transition-colors ${
+              className={`group p-6 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 ease-in-out relative overflow-hidden ${
                 !navigationLinks.previous ? 'md:col-start-2' : ''
               }`}
             >
-              <span className="block text-sm text-gray-500">Próximo</span>
-              <span className="block font-medium mt-1">
-                {navigationLinks.next.title}
-              </span>
+              <div className="flex flex-col text-right">
+                <span className="text-sm text-gray-500 mb-2 font-medium">Próximo →</span>
+                <span className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  {navigationLinks.next.title}
+                </span>
+              </div>
             </a>
           )}
         </nav>
