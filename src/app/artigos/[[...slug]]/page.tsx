@@ -78,10 +78,7 @@ export default async function Article({ params }: { params: { slug?: string[] } 
     .use(remarkParse)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
-    .use(rehypeHighlight, {
-      ignoreMissing: true,
-      detect: true
-    })
+    .use(rehypeHighlight)
     .use(rehypeStringify)
     .process(contentWithoutNavigation)
 
