@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Noto_Sans_Mono } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const notoSansMono = Noto_Sans_Mono({
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
   title: 'Lucas Wesley - Blog',
@@ -12,14 +15,14 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
+      <body className={notoSansMono.className}>
         <nav className="bg-gray-800 text-white p-4">
           <div className="container mx-auto">
-            <a href="/" className="text-xl font-bold mr-3">Inicio</a>
+            <a href="/" className="text-xl font-bold mr-3">Lucas Wesley</a>
           </div>
         </nav>
         {children}

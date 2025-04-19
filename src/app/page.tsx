@@ -11,7 +11,7 @@ export default function Home() {
       <div className="mb-12">
         <div className="bg-blue-100 p-4 rounded-lg mb-5">
           <p className="text-neutral-800 text-left">
-            📝 Apenas documentando meus estudos, talvez você aproveite algo também.
+            📝 Compartilhando meus estudos. Se te servir, aproveite!
           </p>
         </div>
 

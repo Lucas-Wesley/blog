@@ -21,7 +21,7 @@ export default function ArticleCard({ metadata }: ArticleCardProps) {
           <span className="mx-2 text-gray-500">•</span>
           <span className="text-sm text-blue-600">{metadata.category}</span>
         </div>
-        <h2 className="text-2xl font-bold mb-2 text-gray-900">{metadata.title}</h2>
+        <h2 className="text-xl font-bold mb-2 text-gray-900">{metadata.title}</h2>
         <p className="text-gray-600">{metadata.description}</p>
       </Link>
     </article>

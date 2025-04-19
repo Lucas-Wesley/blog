@@ -27,7 +27,9 @@ export function getArticleSlugs() {
       
       if (fs.statSync(filePath).isDirectory()) {
         getAllFiles(filePath);
-      } else if (path.extname(file) === '.md') {
+      } else if (path.extname(file) === '.md' && !relativePath.includes('/imagens/')) {
+        // Ignora arquivos na pasta 'imagens' e garante que é um arquivo Markdown !relativePath.includes('/imagens/')) {
+        // Ignora arquivos na pasta 'imagens' e garante que é um arquivo Markdown
         allFiles.push(relativePath);
       }
     });
@@ -38,12 +40,19 @@ export function getArticleSlugs() {
 }
 
 export function getArticleBySlug(slug: string) {
+  // Verifica se é um arquivo Markdown
+  if (!slug.endsWith('.md') || slug.includes('/imagens/')) {
+    return null;
+  }
   const fullPath = path.join(articlesDirectory, slug);
+  
+  // Verifica se o arquivo existe
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Arquivo não encontrado: ${fullPath}`);
+  }
+  
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const { data, content } = matter(fileContents);
-
-  console.log('Article data:', data);
-
   
   // Tenta extrair o título do conteúdo Markdown se não houver nos metadados
   let title = data.title;
@@ -82,12 +91,14 @@ export function getArticleBySlug(slug: string) {
 }
 
 export function getAllArticles(options?: {
-  status?: 'published' | 'draft' | 'disabled';
   category?: string;
   limit?: number;
+  status?: 'published' | 'draft' | 'disabled';
 }) {
   const slugs = getArticleSlugs();
-  let articles = slugs.map((slug) => getArticleBySlug(slug));
+  let articles = slugs
+    .map((slug) => getArticleBySlug(slug))
+    .filter((article): article is NonNullable<typeof article> => article !== null);
 
   // Filtrar por status
   if (options?.status) {
@@ -131,8 +142,8 @@ export function getAllCategories(): string[] {
 export function getRelatedArticles(currentSlug: string, limit: number = 3) {
   const currentArticle = getArticleBySlug(currentSlug);
   const articles = getAllArticles({
-    category: currentArticle.metadata.category,
-  }).filter((article) => article.metadata.slug !== currentArticle.metadata.slug);
+    category: currentArticle?.metadata.category || ''
+  }).filter((article) => article.metadata.slug !== currentArticle?.metadata.slug);
   
   return articles.slice(0, limit);
 }
