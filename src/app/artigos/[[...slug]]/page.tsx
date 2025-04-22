@@ -99,10 +99,10 @@ export default async function Article({ params }: { params: { slug?: string[] } 
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">
+        <h1 className="text-3xl md:text-3xl sm:text-2xl font-bold mb-4">
           {article.metadata.title || 'Sem título'}
         </h1>
-        <div className="flex items-center text-gray-600">
+        <div className="flex items-center text-gray-600 text-base sm:text-sm">
           <time dateTime={article.metadata.date}>
             {formatDate(article.metadata.date)}
           </time>
@@ -112,7 +112,7 @@ export default async function Article({ params }: { params: { slug?: string[] } 
       </header>
 
       <div 
-        className="prose prose-lg max-w-none text-lg conteudo-blog"
+        className="prose prose-lg sm:prose-base max-w-none text-lg sm:text-base conteudo-blog"
         dangerouslySetInnerHTML={{ __html: contentHtml }} 
       />
       
@@ -125,7 +125,7 @@ export default async function Article({ params }: { params: { slug?: string[] } 
             >
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500 mb-2 font-medium">← Anterior</span>
-                <span className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                <span className="text-lg sm:text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                   {navigationLinks.previous.title}
                 </span>
               </div>

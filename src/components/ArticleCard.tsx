@@ -15,14 +15,14 @@ export default function ArticleCard({ metadata }: ArticleCardProps) {
         className="block"
       >
         <div className="flex items-center mb-4">
-          <span className="text-sm text-gray-500">
+          <span className="text-sm sm:text-xs text-gray-500">
             {format(new Date(metadata.date), "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
           </span>
           <span className="mx-2 text-gray-500">•</span>
-          <span className="text-sm text-blue-600">{metadata.category}</span>
+          <span className="text-sm sm:text-xs text-blue-600">{metadata.category}</span>
         </div>
-        <h2 className="text-xl font-bold mb-2 text-gray-900">{metadata.title}</h2>
-        <p className="text-gray-600">{metadata.description}</p>
+        <h2 className="text-xl sm:text-lg font-bold mb-2 text-gray-900">{metadata.title}</h2>
+        <p className="text-gray-600 text-base sm:text-sm">{metadata.description}</p>
       </Link>
     </article>
   );

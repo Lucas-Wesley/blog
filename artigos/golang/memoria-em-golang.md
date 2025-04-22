@@ -4,7 +4,7 @@ slug: "golang-deep-dive-gerenciamento-de-memoria"
 status: "draft"
 date: "2025-04-15"
 tags: ["golang", "arrays", "slices"]
-category: "💻 Golang"
+category: "Golang"
 description: ""
 ---
 

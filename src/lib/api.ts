@@ -108,9 +108,11 @@ export function getAllArticles(options?: {
     articles = articles.filter((article) => article.metadata.status === 'published');
   }
 
-  // Filtrar por categoria
+  // Filtrar por categoria - comparação case insensitive
   if (options?.category) {
-    articles = articles.filter((article) => article.metadata.category === options.category);
+    articles = articles.filter((article) => 
+      article.metadata.category.toLowerCase() === (options.category?.toLowerCase() ?? '')
+    );
   }
 
   // Ordenar por data (mais recentes primeiro)
