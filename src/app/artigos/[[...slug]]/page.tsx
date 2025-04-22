@@ -7,6 +7,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeStringify from 'rehype-stringify'
+import type { Metadata } from 'next'
 
 interface NavigationLinks {
   previous?: {
@@ -51,6 +52,31 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({
     slug: slug.replace(/\.md$/, '').split('/')
   }))
+}
+
+export async function generateMetadata({ params }: { params: { slug?: string[] } }): Promise<Metadata> {
+  // Se não houver slug, retorna o título padrão
+  if (!params.slug) {
+    return {
+      title: 'Artigos'
+    }
+  }
+
+  const decodedSlug = params.slug.map(segment => decodeURIComponent(segment))
+  const fullPath = `${decodedSlug.join('/')}.md`
+  const article = getArticleBySlug(fullPath)
+
+  // Se não encontrar o artigo, retorna título padrão
+  if (!article) {
+    return {
+      title: 'Artigo não encontrado'
+    }
+  }
+
+  return {
+    title: article.metadata.title || 'Sem título',
+    description: article.metadata.description || 'Artigo do blog'
+  }
 }
 
 export default async function Article({ params }: { params: { slug?: string[] } }) {
