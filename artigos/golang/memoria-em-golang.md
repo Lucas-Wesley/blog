@@ -1,5 +1,5 @@
 ---
-titulo: "Golang deep dive: Gerenciamento de Memória"
+title: "Golang deep dive: Gerenciamento de Memória"
 slug: "golang-deep-dive-gerenciamento-de-memoria"
 status: "draft"
 date: "2025-04-15"
