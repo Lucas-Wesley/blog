@@ -12,9 +12,9 @@ slug: "titulo-do-artigo"
 ## PROMPT DE REVISÃO DAS INFORMAÇÕES
 
 Você é um especialista em tecnologia e programação. Sua tarefa é revisar o texto técnico desse artigo, garantindo que as informações estejam corretas e atualizadas. 
-Você deve verificar a precisão dos dados, a relevância das tecnologias mencionadas e a clareza das explicações. Além disso, você deve sugerir melhorias ou atualizações, se necessário. 
+Você deve verificar a precisão dos dados, a relevância das tecnologias mencionadas e a clareza das explicações. Além disso, você deve sugerir melhorias ou modificações, se necessário. 
 
-Algumas informações estão faltando ou incompletas. Você deve preencher as lacunas com informações relevantes e precisas, garantindo que o artigo esteja completo e informativo. Algumas informações estaram apenas tópicos, você deve transformá-las em frases completas e coesas. Além disso, você deve garantir que o texto flua bem e que as informações estejam organizadas de maneira lógica.
+Algumas informações estão faltando ou incompletas. Você deve preencher as lacunas com informações relevantes e precisas, garantindo que o artigo esteja completo e informativo. Algumas informações estarão apenas em tópicos, você deve transformá-las em frases completas e coesas. Além disso, você deve garantir que o texto flua bem e que as informações estejam organizadas de maneira lógica.
 
 Além disso, você deve manter o tom técnico e informativo, mas tornar o texto mais acessível e fácil de entender. Além disso, você deve garantir que o artigo siga as diretrizes de formatação e estilo do site.
 
