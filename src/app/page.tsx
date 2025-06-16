@@ -1,14 +1,36 @@
-import { getAllArticles, getAllCategories } from '@/lib/api';
+import { getAllArticles, getAllCategories, type ArticleMetadata } from '@/lib/api';
+import { generateSEOMetadata, StructuredData, generateBreadcrumbSchema } from '@/lib/seo';
+import { getReadingTime } from '@/lib/markdown';
+import BlogStats from '@/components/BlogStats';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = generateSEOMetadata({
+  title: 'Lucas Wesley - Blog',
+  description: 'Blog sobre programação, tecnologia e desenvolvimento de software. Artigos sobre DDD, Domain-Driven Design, Node.js, JavaScript, TypeScript, IA e muito mais.',
+  keywords: ['blog', 'programação', 'tecnologia', 'tutoriais', 'artigos técnicos']
+});
 
 export default function Home() {
-  const articles = getAllArticles({ limit: 20 });
+  const articles = getAllArticles({ 
+    limit: 20, 
+    includeContent: false // Não precisa do conteúdo completo na listagem
+  });
   const categories = getAllCategories();
 
+  // Breadcrumb para homepage
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://lucaswesley.dev' }
+  ])
+
   return (
-    <main className="container mx-auto px-4 py-4">
+    <>
+      {/* Structured Data para Breadcrumbs */}
+      <StructuredData data={breadcrumbSchema} />
+      
+      <main className="container mx-auto px-4 py-4">
       <div className="mb-12">
         <div className="bg-blue-100 p-4 rounded-lg mb-5">
           <p className="text-neutral-800 text-left text-base sm:text-sm">
@@ -77,5 +99,6 @@ export default function Home() {
         )}
       </section>
     </main>
+    </>
   );
 }

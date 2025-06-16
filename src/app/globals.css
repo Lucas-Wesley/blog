@@ -12,9 +12,37 @@ body {
   background: rgb(var(--background-rgb));
 }
 
+/* Estilos para títulos do markdown */
+body .conteudo-blog h1 {
+  font-size: 2.25rem; /* 36px */
+  line-height: 1.2;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
 body .conteudo-blog h2 {
-  font-size: var(--text-2xl); /* 1.5rem (24px) */ 
-  line-height: var(--text-2xl--line-height); /* calc(2 / 1.5) */
+  font-size: 1.875rem; /* 30px */
+  line-height: 1.3;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+body .conteudo-blog h3 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 1.4;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+body .conteudo-blog h4 {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.4;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 pre {

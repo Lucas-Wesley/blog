@@ -1,51 +1,20 @@
 import { getArticleBySlug, getArticleSlugs } from '@/lib/api'
+import { 
+  processMarkdown, 
+  extractNavigationLinks, 
+  getReadingTime,
+  type NavigationLinks 
+} from '@/lib/markdown'
+import { 
+  generateArticleMetadata,
+  generateArticleSchema,
+  generateBreadcrumbSchema,
+  StructuredData 
+} from '@/lib/seo'
+import MarkdownContent from '@/components/MarkdownContent'
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { unified } from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeRaw from 'rehype-raw'
-import rehypeHighlight from 'rehype-highlight'
-import rehypeStringify from 'rehype-stringify'
 import type { Metadata } from 'next'
-
-interface NavigationLinks {
-  previous?: {
-    title: string
-    url: string
-  }
-  next?: {
-    title: string
-    url: string
-  }
-}
-
-function extractNavigationLinks(content: string): NavigationLinks {
-  const navigationLinks: NavigationLinks = {}
-  const navigationMatch = content.match(/\+\+\+start\+\+\+([\s\S]*?)\+\+\+end\+\+\+/)
-  
-  if (navigationMatch) {
-    const navigationContent = navigationMatch[1]
-    
-    const previousMatch = navigationContent.match(/## Anterior\s*\[(.*?)\]\((.*?)\)/)
-    if (previousMatch) {
-      navigationLinks.previous = {
-        title: previousMatch[1],
-        url: previousMatch[2]
-      }
-    }
-    
-    const nextMatch = navigationContent.match(/## Próximo\s*\[(.*?)\]\((.*?)\)/)
-    if (nextMatch) {
-      navigationLinks.next = {
-        title: nextMatch[1],
-        url: nextMatch[2]
-      }
-    }
-  }
-  
-  return navigationLinks
-}
 
 export async function generateStaticParams() {
   const slugs = getArticleSlugs()
@@ -58,7 +27,8 @@ export async function generateMetadata({ params }: { params: { slug?: string[] }
   // Se não houver slug, retorna o título padrão
   if (!params.slug) {
     return {
-      title: 'Artigos'
+      title: 'Artigos | Lucas Wesley - Blog',
+      description: 'Todos os artigos sobre programação, tecnologia e desenvolvimento de software.'
     }
   }
 
@@ -69,20 +39,20 @@ export async function generateMetadata({ params }: { params: { slug?: string[] }
   // Se não encontrar o artigo, retorna título padrão
   if (!article) {
     return {
-      title: 'Artigo não encontrado'
+      title: 'Artigo não encontrado | Lucas Wesley - Blog',
+      description: 'O artigo solicitado não foi encontrado.'
     }
   }
 
-  return {
-    title: article.metadata.title || 'Sem título',
-    description: article.metadata.description || 'Artigo do blog'
-  }
+  // Usa o sistema SEO otimizado
+  const readingTime = getReadingTime(article.content)
+  return generateArticleMetadata(article.metadata, readingTime)
 }
 
 export default async function Article({ params }: { params: { slug?: string[] } }) {
   if (!params.slug) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
         <h1 className="text-4xl font-bold mb-8">Artigos</h1>
       </div>
     )
@@ -97,19 +67,30 @@ export default async function Article({ params }: { params: { slug?: string[] } 
     return null;
   }
 
-  // Remove a seção de navegação do conteúdo
-  const contentWithoutNavigation = article.content.replace(/\+\+\+start\+\+\+[\s\S]*?\+\+\+end\+\+\+/g, '')
-
-  const processedContent = await unified()
-    .use(remarkParse)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeRaw)
-    .use(rehypeHighlight)
-    .use(rehypeStringify)
-    .process(contentWithoutNavigation)
-
-  const contentHtml = processedContent.toString()
+  // Processa o markdown com cache e extrai informações
+  const contentHtml = await processMarkdown(article.content, `article-${article.metadata.slug}`)
   const navigationLinks = extractNavigationLinks(article.content)
+  const readingTime = getReadingTime(article.content)
+
+  // Gera structured data para o artigo
+  const articleSchema = generateArticleSchema({
+    title: article.metadata.title,
+    description: article.metadata.description,
+    slug: article.metadata.slug,
+    publishedTime: article.metadata.date,
+    modifiedTime: article.metadata.date,
+    author: article.metadata.autor,
+    category: article.metadata.category,
+    tags: article.metadata.tags,
+    readingTime
+  })
+
+  // Gera breadcrumbs
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://lucaswesley.dev' },
+    { name: 'Artigos', url: 'https://lucaswesley.dev/artigos' },
+    { name: article.metadata.title, url: `https://lucaswesley.dev/artigos/${article.metadata.slug}` }
+  ])
 
   const formatDate = (dateStr: string) => {
     try {
@@ -123,7 +104,14 @@ export default async function Article({ params }: { params: { slug?: string[] } 
   }
 
   return (
-    <article className="container mx-auto px-4 py-8 max-w-3xl">
+    <>
+      {/* Structured Data para Artigo */}
+      <StructuredData data={articleSchema} />
+      
+      {/* Structured Data para Breadcrumbs */}
+      <StructuredData data={breadcrumbSchema} />
+      
+      <article className="container mx-auto px-4 py-8 max-w-5xl">
       <header className="mb-8">
         <h1 className="text-3xl md:text-3xl sm:text-2xl font-bold mb-4">
           {article.metadata.title || 'Sem título'}
@@ -134,12 +122,14 @@ export default async function Article({ params }: { params: { slug?: string[] } 
           </time>
           <span className="mx-2">•</span>
           <span>{article.metadata.category || 'Sem categoria'}</span>
+          <span className="mx-2">•</span>
+          <span>{readingTime} min de leitura</span>
         </div>
       </header>
 
-      <div 
+      <MarkdownContent 
+        html={contentHtml}
         className="prose prose-lg sm:prose-base max-w-none text-lg sm:text-base conteudo-blog"
-        dangerouslySetInnerHTML={{ __html: contentHtml }} 
       />
       
       {(navigationLinks.previous || navigationLinks.next) && (
@@ -171,9 +161,10 @@ export default async function Article({ params }: { params: { slug?: string[] } 
                 </span>
               </div>
             </a>
-          )}
-        </nav>
-      )}
-    </article>
+                  )}
+      </nav>
+    )}
+  </article>
+  </>
   )
 }

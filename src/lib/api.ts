@@ -11,90 +11,167 @@ export type ArticleMetadata = {
   description: string;
   slug: string;
   category: string;
+  tags?: string[];
+  autor?: string;
 };
 
-export function getArticleSlugs() {
+// Cache para melhorar performance
+const cache = new Map<string, { data: any, timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutos em desenvolvimento
+
+function isCacheValid(timestamp: number): boolean {
+  return Date.now() - timestamp < CACHE_TTL;
+}
+
+function getCachedData<T>(key: string): T | null {
+  const cached = cache.get(key);
+  if (cached && isCacheValid(cached.timestamp)) {
+    return cached.data as T;
+  }
+  cache.delete(key);
+  return null;
+}
+
+function setCachedData<T>(key: string, data: T): void {
+  cache.set(key, { data, timestamp: Date.now() });
+}
+
+// Função otimizada para buscar slugs com cache
+export function getArticleSlugs(): string[] {
+  const cacheKey = 'article-slugs';
+  const cached = getCachedData<string[]>(cacheKey);
+  
+  if (cached) {
+    return cached;
+  }
+
   const allFiles: string[] = [];
   
   function getAllFiles(dirPath: string) {
-    const files = fs.readdirSync(dirPath);
-    
-    files.forEach(file => {
-      const filePath = path.join(dirPath, file);
-      const relativePath = path.relative(articlesDirectory, filePath)
-        .split(path.sep)
-        .join('/'); // Normaliza separadores para forward slash
+    try {
+      const files = fs.readdirSync(dirPath);
       
-      if (fs.statSync(filePath).isDirectory()) {
-        getAllFiles(filePath);
-      } else if (path.extname(file) === '.md' && !relativePath.includes('/imagens/')) {
-        // Ignora arquivos na pasta 'imagens' e garante que é um arquivo Markdown !relativePath.includes('/imagens/')) {
-        // Ignora arquivos na pasta 'imagens' e garante que é um arquivo Markdown
-        allFiles.push(relativePath);
-      }
-    });
+      files.forEach(file => {
+        const filePath = path.join(dirPath, file);
+        const relativePath = path.relative(articlesDirectory, filePath)
+          .split(path.sep)
+          .join('/');
+        
+        if (fs.statSync(filePath).isDirectory()) {
+          getAllFiles(filePath);
+        } else if (path.extname(file) === '.md' && !relativePath.includes('/imagens/')) {
+          allFiles.push(relativePath);
+        }
+      });
+    } catch (error) {
+      console.error(`Erro ao ler diretório ${dirPath}:`, error);
+    }
   }
   
   getAllFiles(articlesDirectory);
+  setCachedData(cacheKey, allFiles);
   return allFiles;
 }
 
-export function getArticleBySlug(slug: string) {
-  // Verifica se é um arquivo Markdown
+// Função de validação e normalização de metadados
+function validateAndNormalizeMetadata(data: any, slug: string, content: string): ArticleMetadata {
+  // Extrai título do conteúdo se não existir nos metadados
+  let title = data.title;
+  if (!title) {
+    const h1Match = content.match(/^#\s+(.+)$/m);
+    title = h1Match ? h1Match[1].trim() : 'Sem título';
+  }
+
+  // Extrai categoria do caminho se não existir
+  let category = data.category;
+  if (!category) {
+    const pathParts = slug.split('/');
+    category = pathParts.length > 1 
+      ? pathParts[0].charAt(0).toUpperCase() + pathParts[0].slice(1)
+      : 'Sem categoria';
+  }
+
+  // Normaliza data
+  let date: string;
+  try {
+    date = data.date ? new Date(data.date).toISOString() : new Date().toISOString();
+  } catch (error) {
+    console.warn(`Data inválida para ${slug}:`, data.date);
+    date = new Date().toISOString();
+  }
+
+  // Valida status
+  const validStatuses = ['draft', 'published', 'disabled'] as const;
+  const status = validStatuses.includes(data.status) ? data.status : 'published';
+
+  // Normaliza tags
+  const tags = Array.isArray(data.tags) ? data.tags : [];
+
+  return {
+    slug: slug.replace(/\.md$/, ''),
+    title,
+    date,
+    status,
+    description: data.description || '',
+    category,
+    tags,
+    autor: data.autor || 'Lucas Wesley Moreira Tinta',
+  };
+}
+
+export function getArticleBySlug(slug: string): { metadata: ArticleMetadata, content: string } | null {
+  // Verifica se é um arquivo Markdown válido
   if (!slug.endsWith('.md') || slug.includes('/imagens/')) {
     return null;
   }
+
+  const cacheKey = `article-${slug}`;
+  const cached = getCachedData<{ metadata: ArticleMetadata, content: string }>(cacheKey);
+  
+  if (cached) {
+    return cached;
+  }
+
   const fullPath = path.join(articlesDirectory, slug);
   
   // Verifica se o arquivo existe
   if (!fs.existsSync(fullPath)) {
-    throw new Error(`Arquivo não encontrado: ${fullPath}`);
-  }
-  
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
-  const { data, content } = matter(fileContents);
-  
-  // Tenta extrair o título do conteúdo Markdown se não houver nos metadados
-  let title = data.title;
-  if (!title) {
-    // Procura por um cabeçalho H1 (#) no conteúdo
-    const h1Match = content.match(/^#\s+(.+)$/m);
-    if (h1Match) {
-      title = h1Match[1].trim();
-    }
+    console.error(`Arquivo não encontrado: ${fullPath}`);
+    return null;
   }
 
-  // Tenta extrair a categoria do caminho do arquivo se não houver nos metadados
-  let category = data.category;
-  if (!category) {
-    const pathParts = slug.split('/');
-    if (pathParts.length > 1) {
-      category = pathParts[0].charAt(0).toUpperCase() + pathParts[0].slice(1);
-    }
+  try {
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const { data, content } = matter(fileContents);
+    
+    const metadata = validateAndNormalizeMetadata(data, slug, content);
+    
+    const result = {
+      metadata,
+      content,
+    };
+    
+    setCachedData(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error(`Erro ao processar artigo ${slug}:`, error);
+    return null;
   }
-  
-  // Garante valores padrão para todos os campos
-
-  const articleData: ArticleMetadata = {
-    slug: slug.replace(/\.md$/, ''),
-    title: title || 'Sem título',
-    date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
-    status: data.status || 'published',
-    description: data.description || '',
-    category: category || 'Sem categoria',
-  };
-
-  return {
-    metadata: articleData,
-    content,
-  };
 }
 
 export function getAllArticles(options?: {
   category?: string;
   limit?: number;
   status?: 'published' | 'draft' | 'disabled';
-}) {
+  includeContent?: boolean;
+}): { metadata: ArticleMetadata, content: string }[] {
+  const cacheKey = `all-articles-${JSON.stringify(options)}`;
+  const cached = getCachedData<{ metadata: ArticleMetadata, content: string }[]>(cacheKey);
+  
+  if (cached) {
+    return cached;
+  }
+
   const slugs = getArticleSlugs();
   let articles = slugs
     .map((slug) => getArticleBySlug(slug))
@@ -120,7 +197,7 @@ export function getAllArticles(options?: {
     try {
       return new Date(b.metadata.date).getTime() - new Date(a.metadata.date).getTime();
     } catch (error) {
-      console.error('Error sorting articles by date:', error);
+      console.error('Erro ao ordenar artigos por data:', error);
       return 0;
     }
   });
@@ -130,31 +207,60 @@ export function getAllArticles(options?: {
     articles = articles.slice(0, options.limit);
   }
 
+  // Remove conteúdo se não solicitado para economizar memória
+  if (!options?.includeContent) {
+    articles = articles.map(article => ({
+      ...article,
+      content: '', // Remove conteúdo para listagens
+    }));
+  }
+
+  setCachedData(cacheKey, articles);
   return articles;
 }
 
-// Obter todas as categorias disponíveis
+// Obter todas as categorias disponíveis com cache
 export function getAllCategories(): string[] {
+  const cacheKey = 'all-categories';
+  const cached = getCachedData<string[]>(cacheKey);
+  
+  if (cached) {
+    return cached;
+  }
+
   const articles = getAllArticles();
   const categories = new Set(articles.map((article) => article.metadata.category));
-  return Array.from(categories).sort();
+  const result = Array.from(categories).sort();
+  
+  setCachedData(cacheKey, result);
+  return result;
 }
 
-// Obter artigos relacionados (mesma categoria)
+// Obter artigos relacionados otimizado
 export function getRelatedArticles(currentSlug: string, limit: number = 3) {
   const currentArticle = getArticleBySlug(currentSlug);
+  if (!currentArticle) return [];
+
   const articles = getAllArticles({
-    category: currentArticle?.metadata.category || ''
-  }).filter((article) => article.metadata.slug !== currentArticle?.metadata.slug);
+    category: currentArticle.metadata.category,
+    includeContent: false
+  }).filter((article) => article.metadata.slug !== currentArticle.metadata.slug);
   
   return articles.slice(0, limit);
 }
 
-// Obter artigos por ano/mês
-export function getArticlesByDate(year?: number, month?: number) {
-  const articles = getAllArticles();
+// Obter artigos por ano/mês otimizado
+export function getArticlesByDate(year?: number, month?: number): { metadata: ArticleMetadata, content: string }[] {
+  const cacheKey = `articles-by-date-${year}-${month}`;
+  const cached = getCachedData<{ metadata: ArticleMetadata, content: string }[]>(cacheKey);
   
-  return articles.filter((article) => {
+  if (cached) {
+    return cached;
+  }
+
+  const articles = getAllArticles({ includeContent: false });
+  
+  const result = articles.filter((article) => {
     try {
       const date = new Date(article.metadata.date);
       if (year && month) {
@@ -165,25 +271,100 @@ export function getArticlesByDate(year?: number, month?: number) {
       }
       return true;
     } catch (error) {
-      console.error('Error filtering articles by date:', error);
+      console.error('Erro ao filtrar artigos por data:', error);
       return false;
     }
   });
+
+  setCachedData(cacheKey, result);
+  return result;
 }
 
-// Pesquisar artigos
-export function searchArticles(query: string) {
-  const articles = getAllArticles();
-  const searchTerm = query.toLowerCase();
+// Pesquisar artigos otimizado
+export function searchArticles(query: string): { metadata: ArticleMetadata, content: string }[] {
+  if (!query.trim()) return [];
+
+  const cacheKey = `search-${query.toLowerCase()}`;
+  const cached = getCachedData<{ metadata: ArticleMetadata, content: string }[]>(cacheKey);
   
-  return articles.filter((article) => {
-    const searchableText = `
-      ${article.metadata.title}
-      ${article.metadata.description}
-      ${article.metadata.category}
-      ${article.content}
-    `.toLowerCase();
+  if (cached) {
+    return cached;
+  }
+
+  const articles = getAllArticles({ includeContent: true });
+  const searchTerm = query.toLowerCase().trim();
+  
+  const result = articles.filter((article) => {
+    // Busca ponderada: título e descrição têm mais peso
+    const titleMatch = article.metadata.title.toLowerCase().includes(searchTerm);
+    const descriptionMatch = article.metadata.description.toLowerCase().includes(searchTerm);
+    const categoryMatch = article.metadata.category.toLowerCase().includes(searchTerm);
+    const contentMatch = article.content.toLowerCase().includes(searchTerm);
+    const tagMatch = article.metadata.tags?.some(tag => 
+      tag.toLowerCase().includes(searchTerm)
+    );
     
-    return searchableText.includes(searchTerm);
+    return titleMatch || descriptionMatch || categoryMatch || contentMatch || tagMatch;
+  }).sort((a, b) => {
+    // Ordena por relevância: título > descrição > categoria > tags > conteúdo
+    const aScore = (
+      (a.metadata.title.toLowerCase().includes(searchTerm) ? 100 : 0) +
+      (a.metadata.description.toLowerCase().includes(searchTerm) ? 50 : 0) +
+      (a.metadata.category.toLowerCase().includes(searchTerm) ? 25 : 0) +
+      (a.metadata.tags?.some(tag => tag.toLowerCase().includes(searchTerm)) ? 10 : 0)
+    );
+    
+    const bScore = (
+      (b.metadata.title.toLowerCase().includes(searchTerm) ? 100 : 0) +
+      (b.metadata.description.toLowerCase().includes(searchTerm) ? 50 : 0) +
+      (b.metadata.category.toLowerCase().includes(searchTerm) ? 25 : 0) +
+      (b.metadata.tags?.some(tag => tag.toLowerCase().includes(searchTerm)) ? 10 : 0)
+    );
+    
+    return bScore - aScore;
   });
+
+  setCachedData(cacheKey, result);
+  return result;
+}
+
+// Função para limpar cache manualmente (útil em desenvolvimento)
+export function clearCache(): void {
+  cache.clear();
+}
+
+// Função para obter estatísticas do blog
+export function getBlogStats(): {
+  totalArticles: number;
+  publishedArticles: number;
+  draftArticles: number;
+  categories: number;
+  lastUpdated: string | null;
+} {
+  const cacheKey = 'blog-stats';
+  const cached = getCachedData<{
+    totalArticles: number;
+    publishedArticles: number;
+    draftArticles: number;
+    categories: number;
+    lastUpdated: string | null;
+  }>(cacheKey);
+  
+  if (cached) {
+    return cached;
+  }
+
+  const articles = getAllArticles({ includeContent: false });
+  const categories = getAllCategories();
+  
+  const result = {
+    totalArticles: articles.length,
+    publishedArticles: articles.filter(a => a.metadata.status === 'published').length,
+    draftArticles: articles.filter(a => a.metadata.status === 'draft').length,
+    categories: categories.length,
+    lastUpdated: articles.length > 0 ? articles[0].metadata.date : null,
+  };
+
+  setCachedData(cacheKey, result);
+  return result;
 }
