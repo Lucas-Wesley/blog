@@ -9,9 +9,10 @@ import {
   generateArticleMetadata,
   generateArticleSchema,
   generateBreadcrumbSchema,
-  StructuredData 
-} from '@/lib/seo'
-import MarkdownContent from '@/components/MarkdownContent'
+ 
+  } from '@/lib/seo'
+  import { StructuredData } from '@/components/StructuredData'
+  import MarkdownContent from '@/components/MarkdownContent'
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { Metadata } from 'next'

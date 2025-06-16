@@ -1,5 +1,6 @@
 import { getAllArticles, getAllCategories, type ArticleMetadata } from '@/lib/api';
-import { generateSEOMetadata, StructuredData, generateBreadcrumbSchema } from '@/lib/seo';
+import { generateSEOMetadata, generateBreadcrumbSchema } from '@/lib/seo';
+import { StructuredData } from '@/components/StructuredData';
 import { getReadingTime } from '@/lib/markdown';
 import BlogStats from '@/components/BlogStats';
 import Link from 'next/link';
@@ -34,7 +35,7 @@ export default function Home() {
       <div className="mb-12">
         <div className="bg-blue-100 p-4 rounded-lg mb-5">
           <p className="text-neutral-800 text-left text-base sm:text-sm">
-            📝 Compartilhando meus estudos. Se te servir, aproveite!
+            📝 Compartilhando meus estudos. Escrito a mão todos os artigos.
           </p>
         </div>
         

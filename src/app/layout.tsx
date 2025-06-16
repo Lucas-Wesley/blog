@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_Mono } from 'next/font/google';
 import Script from 'next/script';
-import { generateSEOMetadata, generateWebsiteSchema, StructuredData } from '@/lib/seo';
+import { generateSEOMetadata, generateWebsiteSchema } from '@/lib/seo';
+import { StructuredData } from '@/components/StructuredData';
 import './globals.css';
 
 const notoSansMono = Noto_Sans_Mono({
