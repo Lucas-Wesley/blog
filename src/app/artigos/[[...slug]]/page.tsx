@@ -1,4 +1,4 @@
-import { getArticleBySlug, getArticleSlugs } from '@/lib/api'
+import { getArticleBySlug, getPublishedArticleSlugs } from '@/lib/api'
 import { 
   processMarkdown, 
   extractNavigationLinks, 
@@ -16,9 +16,10 @@ import {
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 
 export async function generateStaticParams() {
-  const slugs = getArticleSlugs()
+  const slugs = getPublishedArticleSlugs()
   return slugs.map((slug) => ({
     slug: slug.replace(/\.md$/, '').split('/')
   }))
@@ -37,8 +38,8 @@ export async function generateMetadata({ params }: { params: { slug?: string[] }
   const fullPath = `${decodedSlug.join('/')}.md`
   const article = getArticleBySlug(fullPath)
 
-  // Se não encontrar o artigo, retorna título padrão
-  if (!article) {
+  // Se não encontrar o artigo ou não estiver publicado, retorna título padrão
+  if (!article || article.metadata.status !== 'published') {
     return {
       title: 'Artigo não encontrado | Lucas Wesley - Blog',
       description: 'O artigo solicitado não foi encontrado.'
@@ -63,9 +64,9 @@ export default async function Article({ params }: { params: { slug?: string[] } 
   const fullPath = `${decodedSlug.join('/')}.md`
   const article = getArticleBySlug(fullPath)
 
-  // Se não for um arquivo markdown, retorna null
-  if (!article) {
-    return null;
+  // Se não for um arquivo markdown ou não estiver publicado, retorna not found
+  if (!article || article.metadata.status !== 'published') {
+    notFound()
   }
 
   // Processa o markdown com cache e extrai informações

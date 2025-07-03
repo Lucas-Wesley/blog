@@ -73,6 +73,25 @@ export function getArticleSlugs(): string[] {
   return allFiles;
 }
 
+// Função para buscar apenas slugs de artigos publicados
+export function getPublishedArticleSlugs(): string[] {
+  const cacheKey = 'published-article-slugs';
+  const cached = getCachedData<string[]>(cacheKey);
+  
+  if (cached) {
+    return cached;
+  }
+
+  const allSlugs = getArticleSlugs();
+  const publishedSlugs = allSlugs.filter(slug => {
+    const article = getArticleBySlug(slug);
+    return article && article.metadata.status === 'published';
+  });
+  
+  setCachedData(cacheKey, publishedSlugs);
+  return publishedSlugs;
+}
+
 // Função de validação e normalização de metadados
 function validateAndNormalizeMetadata(data: any, slug: string, content: string): ArticleMetadata {
   // Extrai título do conteúdo se não existir nos metadados
@@ -228,12 +247,27 @@ export function getAllCategories(): string[] {
     return cached;
   }
 
-  const articles = getAllArticles();
-  const categories = new Set(articles.map((article) => article.metadata.category));
+  const articles = getAllArticles({ status: 'published', includeContent: false });
+  const categories = new Set(
+    articles
+      .map((article) => article.metadata.category)
+      .filter((category) => category && category !== 'Sem categoria') // Filtra categorias inválidas
+  );
   const result = Array.from(categories).sort();
   
   setCachedData(cacheKey, result);
   return result;
+}
+
+// Função para limpar cache específico das categorias
+export function clearCategoriesCache(): void {
+  cache.delete('all-categories');
+}
+
+// Função para forçar atualização das categorias (limpa cache e recria)
+export function refreshCategories(): string[] {
+  clearCategoriesCache();
+  return getAllCategories();
 }
 
 // Obter artigos relacionados otimizado
@@ -354,15 +388,17 @@ export function getBlogStats(): {
     return cached;
   }
 
-  const articles = getAllArticles({ includeContent: false });
+  // Obter todos os artigos (incluindo drafts) para estatísticas internas
+  const publishedArticles = getAllArticles({ status: 'published', includeContent: false });
+  const draftArticles = getAllArticles({ status: 'draft', includeContent: false });
   const categories = getAllCategories();
   
   const result = {
-    totalArticles: articles.length,
-    publishedArticles: articles.filter(a => a.metadata.status === 'published').length,
-    draftArticles: articles.filter(a => a.metadata.status === 'draft').length,
+    totalArticles: publishedArticles.length + draftArticles.length,
+    publishedArticles: publishedArticles.length,
+    draftArticles: draftArticles.length,
     categories: categories.length,
-    lastUpdated: articles.length > 0 ? articles[0].metadata.date : null,
+    lastUpdated: publishedArticles.length > 0 ? publishedArticles[0].metadata.date : null,
   };
 
   setCachedData(cacheKey, result);
