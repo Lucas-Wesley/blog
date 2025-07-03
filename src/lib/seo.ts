@@ -266,6 +266,104 @@ export function generateArticleMetadata(article: ArticleMetadata, readingTime?: 
 
 
 
+// Gera structured data para FAQ (se o artigo contém Q&A)
+export function generateFAQSchema(faqs: Array<{ question: string; answer: string }>) {
+  if (!faqs || faqs.length === 0) return null
+  
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer
+      }
+    }))
+  }
+}
+
+// Gera structured data para HowTo (para tutoriais/guias)
+export function generateHowToSchema({
+  title,
+  description,
+  steps,
+  estimateTime,
+  supply = [],
+  tool = []
+}: {
+  title: string
+  description: string
+  steps: Array<{ name: string; text: string; image?: string }>
+  estimateTime?: string
+  supply?: string[]
+  tool?: string[]
+}) {
+  if (!steps || steps.length === 0) return null
+  
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: title,
+    description,
+    ...(estimateTime && { totalTime: estimateTime }),
+    ...(supply.length > 0 && { supply: supply.map(item => ({ '@type': 'HowToSupply', name: item })) }),
+    ...(tool.length > 0 && { tool: tool.map(item => ({ '@type': 'HowToTool', name: item })) }),
+    step: steps.map((step, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      ...(step.image && {
+        image: {
+          '@type': 'ImageObject',
+          url: step.image
+        }
+      })
+    }))
+  }
+}
+
+// Gera structured data para série de artigos (Course)
+export function generateCourseSchema({
+  name,
+  description,
+  provider,
+  lessons
+}: {
+  name: string
+  description: string
+  provider: string
+  lessons: Array<{ name: string; url: string; description?: string }>
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name,
+    description,
+    provider: {
+      '@type': 'Organization',
+      name: provider
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'online',
+      instructor: {
+        '@type': 'Person',
+        name: siteConfig.author.name
+      }
+    },
+    educationalLevel: 'intermediate',
+    about: lessons.map(lesson => ({
+      '@type': 'Thing',
+      name: lesson.name,
+      url: lesson.url,
+      ...(lesson.description && { description: lesson.description })
+    }))
+  }
+}
+
 // Lista de páginas importantes para sitemap
 export const staticPages = [
   {
@@ -286,4 +384,4 @@ export const staticPages = [
     priority: 0.5,
     lastModified: new Date()
   }
-] 
+]

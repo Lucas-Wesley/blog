@@ -10,4 +10,3 @@ description: ""
 
 **Uso de Memória: Array e Slices**:
    - Slices são mais eficientes em termos de memória, pois são apenas referências a um array subjacente.
-

@@ -6,6 +6,6 @@ description: "Explorando os diferentes métodos de comunicação entre processos
 category: "Backend"
 ---
 
-# Comunicação entre Processos
+# Clean Architecture: Comunicação entre Processos
 
 [Conteúdo em desenvolvimento]

@@ -9,7 +9,6 @@ slug: "exemplo-artigo-template-modelo"
 tags: ["Tag1", "Tag2", "Tag3", "Palavras-chave relevantes"]
 ---
 
-
 ## Conclusão
 
 Resuma os pontos principais do artigo. Reforce os conceitos mais importantes e faça uma conexão com o contexto maior (série de artigos, aplicação prática, etc.).
@@ -30,4 +29,3 @@ Resuma os pontos principais do artigo. Reforce os conceitos mais importantes e f
 [Título do Próximo Artigo (Parte X+1)](link-do-proximo-artigo)
 
 +++end+++
-

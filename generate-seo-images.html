@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Imagens SEO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .preview {
+            background: white;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        button {
+            background: #1E3A8A;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #3B82F6;
+        }
+        .instructions {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Gerador de Imagens SEO para Lucas Wesley - Blog</h1>
+        
+        <div class="instructions">
+            <h3>📋 Instruções:</h3>
+            <ol>
+                <li>Clique em "Gerar Imagem OG" para criar a imagem de compartilhamento social (1200x630)</li>
+                <li>Clique em "Gerar Avatar" para criar a imagem do autor (400x400)</li>
+                <li>Clique com botão direito nas imagens geradas e selecione "Salvar imagem como..."</li>
+                <li>Salve as imagens na pasta <code>/public/</code> do seu projeto:
+                    <ul>
+                        <li><strong>og-image.jpg</strong> - para compartilhamento social</li>
+                        <li><strong>avatar.jpg</strong> - para structured data do autor</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="preview">
+            <h2>🖼️ Open Graph Image (1200x630)</h2>
+            <p>Imagem padrão para compartilhamento em redes sociais</p>
+            <canvas id="ogCanvas" width="1200" height="630"></canvas>
+            <br>
+            <button onclick="generateOGImage()">Gerar Imagem OG</button>
+            <button onclick="downloadCanvas('ogCanvas', 'og-image.jpg')">Download og-image.jpg</button>
+        </div>
+
+        <div class="preview">
+            <h2>👤 Avatar do Autor (400x400)</h2>
+            <p>Imagem do autor para structured data</p>
+            <canvas id="avatarCanvas" width="400" height="400"></canvas>
+            <br>
+            <button onclick="generateAvatar()">Gerar Avatar</button>
+            <button onclick="downloadCanvas('avatarCanvas', 'avatar.jpg')">Download avatar.jpg</button>
+        </div>
+    </div>
+
+    <script>
+        function generateOGImage() {
+            const canvas = document.getElementById('ogCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
+            gradient.addColorStop(0, '#1E3A8A');
+            gradient.addColorStop(1, '#3B82F6');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1200, 630);
+            
+            // Logo/Avatar circle
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(600, 200, 80, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Initials
+            ctx.fillStyle = '#1E3A8A';
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('LW', 600, 220);
+            
+            // Main title
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Lucas Wesley - Blog', 600, 340);
+            
+            // Subtitle
+            ctx.fillStyle = '#E5E7EB';
+            ctx.font = '24px Arial';
+            ctx.fillText('Programação, Tecnologia e Desenvolvimento', 600, 380);
+            
+            // Bottom text
+            ctx.font = '20px Arial';
+            ctx.fillText('lucaswesley.dev', 600, 520);
+        }
+
+        function generateAvatar() {
+            const canvas = document.getElementById('avatarCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 400, 400);
+            gradient.addColorStop(0, '#1E3A8A');
+            gradient.addColorStop(1, '#3B82F6');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 400, 400);
+            
+            // White circle
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(200, 200, 120, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Initials
+            ctx.fillStyle = '#1E3A8A';
+            ctx.font = 'bold 80px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('LW', 200, 230);
+            
+            // Name below
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText('Lucas Wesley', 200, 360);
+        }
+
+        function downloadCanvas(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        }
+
+        // Generate images on page load
+        window.onload = function() {
+            generateOGImage();
+            generateAvatar();
+        };
+    </script>
+</body>
+</html>
