@@ -31,8 +31,8 @@ export default function RootLayout({
   const websiteSchema = generateWebsiteSchema()
 
   return (
-    <html lang="pt-BR" className={notoSansMono.variable}>
-      <body className={`${notoSansMono.className} antialiased`}>
+    <html lang="pt-BR" className={notoSansMono.variable} suppressHydrationWarning={true}>
+      <body className={`${notoSansMono.className} antialiased`} suppressHydrationWarning={true}>
         {/* Structured Data para Website */}
         <StructuredData data={websiteSchema} />
         
@@ -45,6 +45,51 @@ export default function RootLayout({
         <main>
           {children}
         </main>
+
+        {/* Script para resolver problemas de hidratação */}
+        <Script id="hydration-fix" strategy="afterInteractive">
+          {`
+            // Remove classes problemáticas adicionadas por extensões do browser
+            function removeProblematicClasses() {
+              const problematicClasses = [
+                'vsc-initialized',
+                'gr__grammarly_com',
+                'gr-ext-installed',
+                'wappalyzer-ext',
+                'notion-cursor',
+                'metamask-enabled',
+                'lastpass-enabled'
+              ];
+              
+              problematicClasses.forEach(className => {
+                if (document.body.classList.contains(className)) {
+                  document.body.classList.remove(className);
+                }
+                if (document.documentElement.classList.contains(className)) {
+                  document.documentElement.classList.remove(className);
+                }
+              });
+            }
+            
+            // Remove as classes imediatamente
+            removeProblematicClasses();
+            
+            // Observa mudanças no DOM
+            const observer = new MutationObserver(() => {
+              removeProblematicClasses();
+            });
+            
+            observer.observe(document.body, { 
+              attributes: true, 
+              attributeFilter: ['class'] 
+            });
+            
+            observer.observe(document.documentElement, { 
+              attributes: true, 
+              attributeFilter: ['class'] 
+            });
+          `}
+        </Script>
 
         {/* Google Analytics com melhor performance */}
         {process.env.NODE_ENV === 'production' && (
